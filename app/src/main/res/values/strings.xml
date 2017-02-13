@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">GitHubApp</string>
+    <string name="et_search_hint">Search Query</string>
+    <string name="btn_search_label">Search</string>
 </resources>
