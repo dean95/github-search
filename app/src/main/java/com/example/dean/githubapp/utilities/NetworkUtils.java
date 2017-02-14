@@ -3,9 +3,7 @@ package com.example.dean.githubapp.utilities;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.example.dean.githubapp.RepositorySearchActivity;
 import com.example.dean.githubapp.data.Repository;
 
 import org.json.JSONArray;
@@ -27,10 +25,9 @@ public class NetworkUtils {
 
     private static final String LOG_TAG = NetworkUtils.class.getSimpleName();
 
-    final static String GITHUB_BASE_URL = "https://api.github.com/search/repositories";
-    final static String PARAM_QUERY = "q";
-    final static String PARAM_SORT = "sort";
-
+    private final static String GITHUB_BASE_URL = "https://api.github.com/search/repositories";
+    private final static String PARAM_QUERY = "q";
+    private final static String PARAM_SORT = "sort";
 
     private NetworkUtils() {
 
@@ -42,15 +39,13 @@ public class NetworkUtils {
         try {
             jsonResponse = makeHttpRequest(requestUrl);
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Probem making HTTP request", e);
+            Log.e(LOG_TAG, "Problem making HTTP request", e);
         }
 
-        List<Repository> repositoryList = extractRepos(jsonResponse);
-
-        return repositoryList;
+        return extractRepos(jsonResponse);
     }
 
-    public static List<Repository> extractRepos(String jsonResponse) {
+    private static List<Repository> extractRepos(String jsonResponse) {
         if (TextUtils.isEmpty(jsonResponse)) {
             return null;
         }
@@ -69,7 +64,14 @@ public class NetworkUtils {
                 int watchers = currentRepo.getInt("watchers");
                 int forks = currentRepo.getInt("forks_count");
                 int issues = currentRepo.getInt("open_issues_count");
-                String language = currentRepo.getString("language");
+
+                String language;
+                if (!currentRepo.get("language").equals(null)) {
+                    language = currentRepo.getString("language");
+                } else {
+                    language = "unknown";
+                }
+
                 String description = currentRepo.getString("description");
                 String datePublished = currentRepo.getString("pushed_at");
                 String dateUpdated = currentRepo.getString("updated_at");
@@ -106,7 +108,7 @@ public class NetworkUtils {
         return url;
     }
 
-    public static String makeHttpRequest(URL url) throws IOException {
+    private static String makeHttpRequest(URL url) throws IOException {
         String jsonResponse = "";
 
         if (url == null) {
@@ -122,7 +124,6 @@ public class NetworkUtils {
             urlConnection.setConnectTimeout(15000);
             urlConnection.setRequestMethod("GET");
             urlConnection.connect();
-
 
             if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 inputStream = urlConnection.getInputStream();
