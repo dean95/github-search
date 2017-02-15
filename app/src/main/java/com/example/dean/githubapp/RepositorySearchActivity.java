@@ -6,6 +6,8 @@ import android.content.Loader;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -30,7 +32,8 @@ public class RepositorySearchActivity extends AppCompatActivity
 
     private EditText mSearchBoxEditText;
     private Button mSearchButton;
-    private TextView mDisplayTextView;
+    private RecyclerView mRepositoriesRecycler;
+    private RepositoryAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +42,11 @@ public class RepositorySearchActivity extends AppCompatActivity
 
         mSearchBoxEditText = (EditText) findViewById(R.id.et_query);
         mSearchButton = (Button) findViewById(R.id.btn_search);
-        mDisplayTextView = (TextView) findViewById(R.id.tv_response);
+        mRepositoriesRecycler = (RecyclerView) findViewById(R.id.rv_repositories);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        mRepositoriesRecycler.setLayoutManager(layoutManager);
+        mRepositoriesRecycler.setHasFixedSize(true);
 
         mSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,13 +103,8 @@ public class RepositorySearchActivity extends AppCompatActivity
 
     @Override
     public void onLoadFinished(Loader<List<Repository>> loader, List<Repository> repositoryList) {
-        if (repositoryList == null) {
-            mDisplayTextView.setText("Error");
-        } else {
-            for (Repository r : repositoryList) {
-                mDisplayTextView.append(r.getName() + "\n");
-            }
-        }
+        mAdapter = new RepositoryAdapter(repositoryList);
+        mRepositoriesRecycler.setAdapter(mAdapter);
     }
 
     @Override
