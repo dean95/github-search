@@ -2,6 +2,7 @@ package com.example.dean.githubapp;
 
 import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -25,7 +26,10 @@ import java.net.URL;
 import java.util.List;
 
 public class RepositorySearchActivity extends AppCompatActivity
-        implements LoaderManager.LoaderCallbacks<List<Repository>> {
+        implements LoaderManager.LoaderCallbacks<List<Repository>>,
+        RepositoryAdapter.ListItemClickListener {
+
+    public static final String REPOSITORY_EXTRA = "repository_extra";
 
     private static final int LOADER_ID = 1;
     private static final String SEARCH_QUERY_URL_EXTRA = "query";
@@ -34,6 +38,8 @@ public class RepositorySearchActivity extends AppCompatActivity
     private Button mSearchButton;
     private RecyclerView mRepositoriesRecycler;
     private RepositoryAdapter mAdapter;
+
+    private List<Repository> mRepositoryList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,13 +109,26 @@ public class RepositorySearchActivity extends AppCompatActivity
 
     @Override
     public void onLoadFinished(Loader<List<Repository>> loader, List<Repository> repositoryList) {
-        mAdapter = new RepositoryAdapter(repositoryList);
+        if (repositoryList == null) {
+            return;
+        }
+
+        mRepositoryList = repositoryList;
+
+        mAdapter = new RepositoryAdapter(repositoryList, this);
         mRepositoriesRecycler.setAdapter(mAdapter);
     }
 
     @Override
     public void onLoaderReset(Loader<List<Repository>> loader) {
 
+    }
+
+    @Override
+    public void onListItemClicked(int clickedItemIndex) {
+        Intent intent = new Intent(this, RepositoryDetailActivity.class);
+        intent.putExtra(REPOSITORY_EXTRA, mRepositoryList.get(clickedItemIndex));
+        startActivity(intent);
     }
 
     private void makeGithubSearchQuery() {

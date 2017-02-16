@@ -1,6 +1,5 @@
 package com.example.dean.githubapp;
 
-import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,10 +15,13 @@ public class RepositoryAdapter extends RecyclerView.Adapter<RepositoryAdapter.Re
 
     private static final String LOG_TAG = RepositoryAdapter.class.getSimpleName();
 
+    final private ListItemClickListener mOnClickListener;
+
     private List<Repository> mRepositoryList;
 
-    public RepositoryAdapter(List<Repository> repositoryList) {
+    public RepositoryAdapter(List<Repository> repositoryList, ListItemClickListener listener) {
         mRepositoryList = repositoryList;
+        mOnClickListener = listener;
     }
 
     @Override
@@ -47,7 +49,7 @@ public class RepositoryAdapter extends RecyclerView.Adapter<RepositoryAdapter.Re
         return mRepositoryList.size();
     }
 
-    class RepositoryViewHolder extends RecyclerView.ViewHolder {
+    class RepositoryViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         ImageView avatarImageView;
         TextView repoNameTextView;
@@ -65,7 +67,18 @@ public class RepositoryAdapter extends RecyclerView.Adapter<RepositoryAdapter.Re
             watchersTextView = (TextView) itemView.findViewById(R.id.tv_watchers);
             forksTextView = (TextView) itemView.findViewById(R.id.tv_forks);
             issuesTextView = (TextView) itemView.findViewById(R.id.tv_issues);
+
+            itemView.setOnClickListener(this);
         }
 
+        @Override
+        public void onClick(View view) {
+            int clickedPosition = getAdapterPosition();
+            mOnClickListener.onListItemClicked(clickedPosition);
+        }
+    }
+
+    public interface ListItemClickListener {
+        void onListItemClicked(int clickedItemIndex);
     }
 }
