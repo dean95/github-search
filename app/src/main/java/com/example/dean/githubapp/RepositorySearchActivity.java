@@ -4,13 +4,17 @@ import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,7 +31,8 @@ import java.util.List;
 
 public class RepositorySearchActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<List<Repository>>,
-        RepositoryAdapter.ListItemClickListener {
+        RepositoryAdapter.ListItemClickListener,
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
     public static final String REPOSITORY_EXTRA = "repository_extra";
 
@@ -61,7 +66,17 @@ public class RepositorySearchActivity extends AppCompatActivity
             }
         });
 
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+
         getLoaderManager().initLoader(LOADER_ID, null, this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -131,9 +146,38 @@ public class RepositorySearchActivity extends AppCompatActivity
         startActivity(intent);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.action_settings:
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(getString(R.string.pref_sort_by_key))) {
+            makeGithubSearchQuery();
+        }
+    }
+
     private void makeGithubSearchQuery() {
         String query = mSearchBoxEditText.getText().toString();
-        URL githubRequestUrl = NetworkUtils.buildUrl(query, "stars");
+        String sortBy = loadSortByFromPreferences();
+        URL githubRequestUrl = NetworkUtils.buildUrl(query, sortBy);
 
         Bundle queryBundle = new Bundle();
         queryBundle.putString(SEARCH_QUERY_URL_EXTRA, githubRequestUrl.toString());
@@ -146,5 +190,16 @@ public class RepositorySearchActivity extends AppCompatActivity
         } else {
             loaderManager.restartLoader(LOADER_ID, queryBundle, RepositorySearchActivity.this);
         }
+    }
+
+    private String loadSortByFromPreferences() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        String sortBy = sharedPreferences.getString(
+                getString(R.string.pref_sort_by_key),
+                getString(R.string.pref_sort_by_stars_value)
+        );
+
+        return sortBy;
     }
 }

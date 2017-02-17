@@ -8,4 +8,18 @@
     <string name="language_label">Language</string>
     <string name="date_created_label">Date created</string>
     <string name="date_modified_label">Date modified</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="pref_sort_by_label">Sort By</string>
+    
+    <string name="pref_sort_by_label_stars">Stars</string>
+    <string name="pref_sort_by_label_forks">Forks</string>
+    <string name="pref_sort_by_label_updated">Updated</string>
+
+    <string name="pref_sort_by_key" translatable="false">sort_by</string>
+
+    <string name="pref_sort_by_stars_value" translatable="false">stars</string>
+    <string name="pref_sort_by_forks_value" translatable="false">forks</string>
+    <string name="pref_sort_by_updated_value" translatable="false">updated</string>
+    <string name="details_label">Details</string>
 </resources>

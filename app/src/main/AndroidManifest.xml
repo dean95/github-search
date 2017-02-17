@@ -10,14 +10,28 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".RepositorySearchActivity">
+        <activity android:name=".RepositorySearchActivity"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".RepositoryDetailActivity"></activity>
+        <activity android:name=".RepositoryDetailActivity"
+            android:label="@string/details_label"
+            android:parentActivityName=".RepositorySearchActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".RepositorySearchActivity" />
+        </activity>
+        <activity android:name=".SettingsActivity"
+            android:label="@string/action_settings"
+            android:parentActivityName=".RepositorySearchActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".RepositorySearchActivity" />
+        </activity>
     </application>
 
 </manifest>
