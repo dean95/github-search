@@ -1,10 +1,12 @@
 package com.example.dean.githubapp;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -25,6 +27,8 @@ public class RepositoryDetailActivity extends AppCompatActivity {
     private TextView mDateCreatedTextView;
     private TextView mDateModifiedTextView;
 
+    private Repository repository;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +48,7 @@ public class RepositoryDetailActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         if (intent.hasExtra(RepositorySearchActivity.REPOSITORY_EXTRA)) {
-            Repository repository = (Repository)
+            repository = (Repository)
                     intent.getSerializableExtra(RepositorySearchActivity.REPOSITORY_EXTRA);
 
             mOwnerTextView.setText(repository.getName());
@@ -58,6 +62,12 @@ public class RepositoryDetailActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.details_menu, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
@@ -65,8 +75,19 @@ public class RepositoryDetailActivity extends AppCompatActivity {
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
+            case R.id.action_open_browser:
+                openRepoWebsite();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void openRepoWebsite() {
+        if (repository != null) {
+            Uri repoUri = Uri.parse(repository.getWebsiteUrl());
+            Intent websiteIntent = new Intent(Intent.ACTION_VIEW, repoUri);
+            startActivity(websiteIntent);
         }
     }
 }

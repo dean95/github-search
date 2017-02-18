@@ -75,13 +75,14 @@ public class NetworkUtils {
                 String description = currentRepo.getString("description");
                 String datePublished = currentRepo.getString("pushed_at");
                 String dateUpdated = currentRepo.getString("updated_at");
+                String websiteUrl = currentRepo.getString("html_url");
 
                 JSONObject owner = currentRepo.getJSONObject("owner");
                 String ownerName = owner.getString("login");
                 String ownerAvatar = owner.getString("avatar_url");
 
                 Repository repository = new Repository(name, ownerName, ownerAvatar, watchers,
-                        forks, issues, language, description, datePublished, dateUpdated);
+                        forks, issues, language, description, datePublished, dateUpdated, websiteUrl);
 
                 repositoryList.add(repository);
             }

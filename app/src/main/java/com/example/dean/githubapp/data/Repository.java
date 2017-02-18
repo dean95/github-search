@@ -14,10 +14,11 @@ public class Repository implements Serializable {
     private String description;
     private String datePublished;
     private String dateModified;
+    private String websiteUrl;
 
     public Repository(String name, String owner, String avatarUrl, int watchers, int forks,
                       int issues, String language, String description, String datePublished,
-                      String dateModified) {
+                      String dateModified, String websiteUrl) {
         this.name = name;
         this.owner = owner;
         this.avatarUrl = avatarUrl;
@@ -28,6 +29,7 @@ public class Repository implements Serializable {
         this.description = description;
         this.datePublished = datePublished;
         this.dateModified = dateModified;
+        this.websiteUrl = websiteUrl;
     }
 
     public String getName() {
@@ -108,5 +110,13 @@ public class Repository implements Serializable {
 
     public void setDateModified(String dateModified) {
         this.dateModified = dateModified;
+    }
+
+    public String getWebsiteUrl() {
+        return websiteUrl;
+    }
+
+    public void setWebsiteUrl(String websiteUrl) {
+        this.websiteUrl = websiteUrl;
     }
 }
