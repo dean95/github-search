@@ -1,5 +1,6 @@
 package com.example.dean.githubapp.utilities;
 
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;

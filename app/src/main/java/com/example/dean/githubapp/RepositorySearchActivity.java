@@ -5,6 +5,8 @@ import android.content.AsyncTaskLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -43,6 +45,7 @@ public class RepositorySearchActivity extends AppCompatActivity
     private Button mSearchButton;
     private RecyclerView mRepositoriesRecycler;
     private RepositoryAdapter mAdapter;
+    private TextView mEmptyView;
 
     private List<Repository> mRepositoryList;
 
@@ -54,6 +57,7 @@ public class RepositorySearchActivity extends AppCompatActivity
         mSearchBoxEditText = (EditText) findViewById(R.id.et_query);
         mSearchButton = (Button) findViewById(R.id.btn_search);
         mRepositoriesRecycler = (RecyclerView) findViewById(R.id.rv_repositories);
+        mEmptyView = (TextView) findViewById(R.id.tv_empty_view);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         mRepositoriesRecycler.setLayoutManager(layoutManager);
@@ -124,9 +128,14 @@ public class RepositorySearchActivity extends AppCompatActivity
 
     @Override
     public void onLoadFinished(Loader<List<Repository>> loader, List<Repository> repositoryList) {
-        if (repositoryList == null) {
+        if (repositoryList == null || repositoryList.isEmpty()) {
+            mRepositoriesRecycler.setVisibility(View.GONE);
+            mEmptyView.setVisibility(View.VISIBLE);
             return;
         }
+
+        mEmptyView.setVisibility(View.GONE);
+        mRepositoriesRecycler.setVisibility(View.VISIBLE);
 
         mRepositoryList = repositoryList;
 
@@ -182,6 +191,11 @@ public class RepositorySearchActivity extends AppCompatActivity
         Bundle queryBundle = new Bundle();
         queryBundle.putString(SEARCH_QUERY_URL_EXTRA, githubRequestUrl.toString());
 
+        if (!checkNetworkConnection()) {
+            Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         LoaderManager loaderManager = getLoaderManager();
         Loader<List<Repository>> githubSearchLoader = loaderManager.getLoader(LOADER_ID);
 
@@ -201,5 +215,18 @@ public class RepositorySearchActivity extends AppCompatActivity
         );
 
         return sortBy;
+    }
+
+    public boolean checkNetworkConnection() {
+        ConnectivityManager connManager = (ConnectivityManager)
+                getSystemService(CONNECTIVITY_SERVICE);
+
+        NetworkInfo networkInfo = connManager.getActiveNetworkInfo();
+
+        if (networkInfo != null && networkInfo.isConnectedOrConnecting()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

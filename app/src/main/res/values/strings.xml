@@ -23,4 +23,5 @@
     <string name="pref_sort_by_updated_value" translatable="false">updated</string>
     <string name="details_label">Details</string>
     <string name="action_show_in_browser">Show in browser</string>
+    <string name="no_result">No results</string>
 </resources>
