@@ -13,12 +13,6 @@ import android.widget.TextView;
 import com.example.dean.githubapp.data.Repository;
 import com.example.dean.githubapp.utilities.DateUtils;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 public class RepositoryDetailActivity extends AppCompatActivity {
 
     private TextView mOwnerTextView;

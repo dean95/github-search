@@ -7,26 +7,24 @@ import android.content.Loader;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.dean.githubapp.data.Repository;
 import com.example.dean.githubapp.utilities.NetworkUtils;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -46,6 +44,7 @@ public class RepositorySearchActivity extends AppCompatActivity
     private RecyclerView mRepositoriesRecycler;
     private RepositoryAdapter mAdapter;
     private TextView mEmptyView;
+    private ProgressBar mLoadingIndicator;
 
     private List<Repository> mRepositoryList;
 
@@ -58,6 +57,7 @@ public class RepositorySearchActivity extends AppCompatActivity
         mSearchButton = (Button) findViewById(R.id.btn_search);
         mRepositoriesRecycler = (RecyclerView) findViewById(R.id.rv_repositories);
         mEmptyView = (TextView) findViewById(R.id.tv_empty_view);
+        mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         mRepositoriesRecycler.setLayoutManager(layoutManager);
@@ -94,6 +94,8 @@ public class RepositorySearchActivity extends AppCompatActivity
                     return;
                 }
 
+                mLoadingIndicator.setVisibility(View.VISIBLE);
+
                 if (repositoryData != null) {
                     deliverResult(repositoryData);
                 } else {
@@ -128,6 +130,8 @@ public class RepositorySearchActivity extends AppCompatActivity
 
     @Override
     public void onLoadFinished(Loader<List<Repository>> loader, List<Repository> repositoryList) {
+        mLoadingIndicator.setVisibility(View.GONE);
+
         if (repositoryList == null || repositoryList.isEmpty()) {
             mRepositoriesRecycler.setVisibility(View.GONE);
             mEmptyView.setVisibility(View.VISIBLE);
@@ -196,14 +200,7 @@ public class RepositorySearchActivity extends AppCompatActivity
             return;
         }
 
-        LoaderManager loaderManager = getLoaderManager();
-        Loader<List<Repository>> githubSearchLoader = loaderManager.getLoader(LOADER_ID);
-
-        if (githubSearchLoader == null) {
-            loaderManager.initLoader(LOADER_ID, queryBundle, RepositorySearchActivity.this);
-        } else {
-            loaderManager.restartLoader(LOADER_ID, queryBundle, RepositorySearchActivity.this);
-        }
+        getLoaderManager().restartLoader(LOADER_ID, queryBundle, RepositorySearchActivity.this);
     }
 
     private String loadSortByFromPreferences() {
@@ -223,10 +220,6 @@ public class RepositorySearchActivity extends AppCompatActivity
 
         NetworkInfo networkInfo = connManager.getActiveNetworkInfo();
 
-        if (networkInfo != null && networkInfo.isConnectedOrConnecting()) {
-            return true;
-        } else {
-            return false;
-        }
+        return (networkInfo != null && networkInfo.isConnectedOrConnecting());
     }
 }

@@ -34,9 +34,17 @@
     <TextView
         android:id="@+id/tv_empty_view"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_gravity="center"
         android:visibility="gone"
         android:textSize="24sp"
         android:text="@string/no_result"/>
+
+    <ProgressBar
+        android:id="@+id/pb_loading_indicator"
+        style="@style/Widget.AppCompat.ProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="invisible"/>
 </LinearLayout>
